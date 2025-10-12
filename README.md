@@ -19,7 +19,6 @@
 
 - 📚 包含 1000+ 常用计算机词汇
 - 🔍 支持单词搜索与分类学习
-- 🗂️ 词汇分级（基础 / 中级 / 高级）
 - 🧾 在线测验与学习进度记录（可选）
 - 🌐 响应式界面，适配 PC / 手机端
 - 🧠 后端支持自定义词库扩展
@@ -35,8 +34,8 @@
 
 **后端：**
 - [Flask](https://flask.palletsprojects.com/)
-- Python 3.x
-- SQLite / MySQL (可选)
+- Python
+- MySQL
 
 **开发工具：**
 - VS Code
