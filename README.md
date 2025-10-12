@@ -1,4 +1,4 @@
-# 💻 Computer Vocabulary Learning (计算机英语词汇学习)
+# 💻 LearnTechWords (计算机英语词汇学习)
 
 > 一个收录了 **1000+ 计算机必备英语单词** 的在线学习项目  
 > 帮助你轻松掌握开发、计算机科学和 IT 领域常见词汇  
