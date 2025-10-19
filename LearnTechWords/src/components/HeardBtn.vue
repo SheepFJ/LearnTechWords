@@ -4,19 +4,23 @@
             <!-- 左侧网站名称 -->
             <div class="logo">
                 
-                <h1><img src="@/assets/img/logo.svg" alt="云上考证">云上考证</h1>
+                <h1 @click="router.push('/home')"><img src="@/assets/img/logo.svg" alt="LearnTechWords" >LearnTechWords</h1>
             </div>
             
             <!-- 中间导航菜单 -->
             <nav class="menu">
                 <ul>
-
+                    <li class="nav-item" 
+                        @mouseenter="showDropdown('home')" 
+                        @mouseleave="hideDropdown">
+                        <a href="#" class="nav-link" @click="router.push('/home')">主页</a>
+                    </li>
 
                     <li class="nav-item" 
                         @mouseenter="showDropdown('certificates')" 
                         @mouseleave="hideDropdown">
-                        <a href="#" class="nav-link" @click.prevent="toggleDropdown('certificates')">学习<i class="iconfont icon-zhankai1"></i></a>
-                        <div class="dropdown" 
+                        <a href="#" class="nav-link" @click="router.push('/study')">学习中心</a>
+                        <!-- <div class="dropdown" 
                              :class="{ 'dropdown-show': activeDropdown === 'certificates' }"
                              @mouseenter="keepDropdown('certificates')"
                              @mouseleave="hideDropdown">
@@ -25,7 +29,7 @@
                                 <a href="#" class="dropdown-item">职业资格</a>
                                 <a href="#" class="dropdown-item">技能认证</a>
                             </div>
-                        </div>
+                        </div> -->
                     </li>
                     <li class="nav-item" 
                         @mouseenter="showDropdown('tools')" 
@@ -44,56 +48,77 @@
                     <li class="nav-item" 
                         @mouseenter="showDropdown('courses')" 
                         @mouseleave="hideDropdown">
-                        <a href="#" class="nav-link" @click.prevent="toggleDropdown('courses')">关于<i class="iconfont icon-zhankai1"></i></a>
-                        <div class="dropdown" 
-                             :class="{ 'dropdown-show': activeDropdown === 'courses' }"
-                             @mouseenter="keepDropdown('courses')"
-                             @mouseleave="hideDropdown">
-                            <div class="dropdown-content">
-                                <a href="#" class="dropdown-item" @click="router.push('/introduce')">项目介绍</a>
-                                <a href="#" class="dropdown-item">关于我们</a>
-                                <a href="#" class="dropdown-item">联系我们</a>
-                            </div>
-                        </div>
+                        <a href="#" class="nav-link" @click="router.push('/introduce')">关于</a>
                     </li>
                 </ul>
             </nav>
             
             <!-- 右侧登录/用户信息按钮 -->
-            <div class="user-section" @mouseleave="showUserMenu = false">
+            <div class="user-section">
                 <template v-if="!userInfo">
                     <button class="login-btn" @click="handleLogin">
+                        <i class="iconfont icon-user"></i>
                         登录
                     </button>
                 </template>
                 <template v-else>
-                    <div class="user-info-wrapper" style="position: relative; display: inline-block;">
-                        <span 
-                            class="user-name" 
-                            @mouseenter="showUserMenu = true"
-                            style="cursor: pointer;"
+                    <div class="user-info-wrapper">
+                        <div 
+                            class="user-avatar" 
+                            @click="toggleUserMenu"
+                            @mouseenter="showUserMenuHandler"
+                            @mouseleave="hideUserMenuHandler"
                         >
-                            {{ userInfo.name || userInfo.username || '用户' }}
-                        </span>
+                            
+                            <span class="user-name">{{ userInfo.name || userInfo.username || '用户' }}</span>
+                            <i class="iconfont icon-arrow-down" :class="{ 'rotate': showUserMenu }"></i>
+                        </div>
+                        
                         <div 
                             class="user-dropdown-menu" 
                             v-show="showUserMenu"
-                            @mouseenter="showUserMenu = true"
-                            @mouseleave="showUserMenu = false"
-                            style="position: absolute; right: 0; top: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 8px; min-width: 120px; z-index: 100;"
+                            @mouseenter="showUserMenuHandler"
+                            @mouseleave="hideUserMenuHandler"
                         >
-                            <!-- <a 
-                                href="#" 
-                                class="dropdown-item" 
-                                style="display: block; padding: 10px 20px; color: #333; text-decoration: none;"
-                                @click.prevent="goToMyWrongQuestions"
-                            >我的错题</a> -->
-                            <a 
-                                href="#" 
-                                class="dropdown-item" 
-                                style="display: block; padding: 10px 20px; color: #e74c3c; text-decoration: none;"
-                                @click.prevent="handleLogout"
-                            >登出</a>
+                            <div class="menu-header">
+                                <div class="user-info">
+                                    <div class="avatar-circle large">
+                                        <span class="avatar-text">
+                                            {{ (userInfo.name || userInfo.username || '用户').charAt(0).toUpperCase() }}
+                                        </span>
+                                    </div>
+                                    <div class="user-details">
+                                        <div class="user-name-large">{{ userInfo.name || userInfo.username || '用户' }}</div>
+                                        <div class="user-email">{{ userInfo.email || 'user@example.com' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="menu-divider"></div>
+                            
+                            <div class="menu-items">
+                                <a href="#" class="menu-item" @click.prevent="goToProfile">
+                                    <i class="iconfont icon-user"></i>
+                                    <span>个人资料</span>
+                                </a>
+                                <a href="#" class="menu-item" @click.prevent="goToSettings">
+                                    <i class="iconfont icon-setting"></i>
+                                    <span>设置</span>
+                                </a>
+                                <a href="#" class="menu-item" @click.prevent="goToMyWrongQuestions">
+                                    <i class="iconfont icon-book"></i>
+                                    <span>学习记录</span>
+                                </a>
+                            </div>
+                            
+                            <div class="menu-divider"></div>
+                            
+                            <div class="menu-items">
+                                <a href="#" class="menu-item logout" @click.prevent="handleLogout">
+                                    <i class="iconfont icon-logout"></i>
+                                    <span>退出登录</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -105,8 +130,7 @@
 <script setup lang="ts">
 import router from '@/router'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import CeShi from '@/components/CeShi.vue'
+// import CeShi from '@/components/CeShi.vue'
 // 响应式数据
 const isHeaderHidden = ref(false)
 const activeDropdown = ref('')
@@ -114,8 +138,9 @@ const lastScrollY = ref(0)
 const headerRef = ref<HTMLElement | null>(null)
 
 // 用户信息与菜单显示
-const userInfo = ref<any | null>(null)
+const userInfo = ref(null)
 const showUserMenu = ref(false)
+let hideMenuTimer = null
 
 // 初始化用户信息
 const loadUserInfo = () => {
@@ -148,17 +173,56 @@ onMounted(() => {
 
 // 退出登录
 const handleLogout = () => {
+    hideUserMenuImmediately()
     localStorage.removeItem('user_token')
     localStorage.removeItem('user_info')
     userInfo.value = null
-    showUserMenu.value = false
     router.push('/login')
 }
 
-// 跳转到我的错题
+// 切换用户菜单
+const toggleUserMenu = () => {
+    showUserMenu.value = !showUserMenu.value
+    if (showUserMenu.value) {
+        clearTimeout(hideMenuTimer)
+    }
+}
+
+// 显示用户菜单
+const showUserMenuHandler = () => {
+    clearTimeout(hideMenuTimer)
+    showUserMenu.value = true
+}
+
+// 隐藏用户菜单（带延迟）
+const hideUserMenuHandler = () => {
+    hideMenuTimer = setTimeout(() => {
+        showUserMenu.value = false
+    }, 150) // 150ms延迟，给用户时间移动到菜单
+}
+
+// 立即隐藏用户菜单
+const hideUserMenuImmediately = () => {
+    clearTimeout(hideMenuTimer)
+    showUserMenu.value = false
+}
+
+// 跳转到个人资料
+const goToProfile = () => {
+    hideUserMenuImmediately()
+    router.push('/profile')
+}
+
+// 跳转到设置
+const goToSettings = () => {
+    hideUserMenuImmediately()
+    router.push('/settings')
+}
+
+// 跳转到学习记录
 const goToMyWrongQuestions = () => {
-    // 这里可以根据实际路由调整
-    router.push('/my-wrong-questions')
+    hideUserMenuImmediately()
+    router.push('/study-record')
 }
 
 // 滚动处理函数
@@ -181,11 +245,11 @@ const handleScroll = () => {
 }
 
 // 下拉菜单控制
-const showDropdown = (dropdownName: string) => {
+const showDropdown = (dropdownName) => {
     activeDropdown.value = dropdownName
 }
 
-const keepDropdown = (dropdownName: string) => {
+const keepDropdown = (dropdownName) => {
     // 当鼠标移动到下拉菜单内容时，保持显示
     activeDropdown.value = dropdownName
 }
@@ -195,12 +259,12 @@ const hideDropdown = () => {
     activeDropdown.value = ''
 }
 
-const toggleDropdown = (dropdownName: string) => {
+const toggleDropdown = (dropdownName) => {
     activeDropdown.value = activeDropdown.value === dropdownName ? '' : dropdownName
 }
 
-const handleDocumentClick = (event: MouseEvent) => {
-    const targetNode = event.target as Node | null
+const handleDocumentClick = (event) => {
+    const targetNode = event.target
     if (headerRef.value && targetNode && !headerRef.value.contains(targetNode)) {
         activeDropdown.value = ''
     }
@@ -220,6 +284,10 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
     document.removeEventListener('click', handleDocumentClick, true)
+    // 清理定时器
+    if (hideMenuTimer) {
+        clearTimeout(hideMenuTimer)
+    }
 })
 </script>
 
@@ -388,6 +456,7 @@ header {
 .user-section {
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .login-btn {
@@ -415,8 +484,167 @@ header {
     transform: translateY(0);
 }
 
-.user-icon {
+/* 用户信息区域 */
+.user-info-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.user-avatar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-avatar:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.avatar-circle.large {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+}
+
+.avatar-text {
+    font-weight: 600;
+}
+
+.user-name {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.user-name-large {
+    font-weight: 600;
+    color: #333;
     font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-email {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.icon-arrow-down {
+    font-size: 0.8rem;
+    color: #666;
+    transition: transform 0.3s ease;
+}
+
+.icon-arrow-down.rotate {
+    transform: rotate(180deg);
+}
+
+/* 用户下拉菜单 */
+.user-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 2px);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+    z-index: 1000;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.menu-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.05);
+    margin: 0.5rem 0;
+}
+
+.menu-items {
+    padding: 0.5rem 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+    background: rgba(102, 126, 234, 0.05);
+    color: #667eea;
+    border-left-color: #667eea;
+    transform: translateX(5px);
+}
+
+.menu-item.logout {
+    color: #e74c3c;
+}
+
+.menu-item.logout:hover {
+    background: rgba(231, 76, 60, 0.05);
+    color: #c0392b;
+    border-left-color: #e74c3c;
+}
+
+.menu-item i {
+    font-size: 1rem;
+    width: 16px;
+    text-align: center;
 }
 
 /* 响应式设计 */
@@ -472,7 +700,11 @@ header {
 
 @media (max-width: 480px) {
     .logo h1 {
-        font-size: 1.25rem;
+        font-size: 0;
+    }
+    .logo img {
+        width: 40px;
+        height: 40px;
     }
 
     .menu ul {
@@ -486,6 +718,50 @@ header {
 
     .dropdown-content {
         min-width: 150px;
+    }
+    
+    /* 移动端用户菜单适配 */
+    .user-avatar {
+        padding: 0.4rem 0.8rem;
+        gap: 0.5rem;
+    }
+    
+    .avatar-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+    
+    .user-name {
+        font-size: 0.8rem;
+    }
+    
+    .user-dropdown-menu {
+        min-width: 260px;
+        right: -10px;
+    }
+    
+    .menu-header {
+        padding: 1rem;
+    }
+    
+    .avatar-circle.large {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .user-name-large {
+        font-size: 0.9rem;
+    }
+    
+    .user-email {
+        font-size: 0.75rem;
+    }
+    
+    .menu-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
     }
 }
 

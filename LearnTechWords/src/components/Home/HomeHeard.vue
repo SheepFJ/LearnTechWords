@@ -3,11 +3,9 @@
 
     <ResearchDisplay />
 
-    <CeShi />
 </template>
 
 <script setup lang="ts">
-import CeShi from '@/components/Home/CeShi.vue'
 import ResearchDisplay from '@/components/Home/ResearchDisplay.vue'
 </script>
 

@@ -6,11 +6,10 @@
                 <div class="brand-section" style="display: flex; justify-content: center; align-items: center; width: 100%;">
                     <div class="logo" style="display: flex; align-items: center;">
                         <h2 style="display: flex; align-items: center; gap: 4px;">
-                            <img src="@/assets/img/logo.svg" alt="云上考证" style="width: 30px; height: 30px;">
-                            云上考证
+                            <img src="@/assets/img/logo.svg" alt="LearnTechWords" style="width: 30px; height: 30px;">
+                            LearnTechWords
                         </h2>
                     </div>
-                    
                 </div>
 
                 <!-- 联系我们 -->
@@ -34,12 +33,12 @@
         <div class="footer-bottom">
             <div class="bottom-container">
                 <div class="copyright">
-                    <span>© {{ currentYear }} 云上考证. 学习使用</span>
+                    <span>© {{ currentYear }}  LearnTechWords. 学习使用</span>
                 </div>
                 <div class="legal">
-                    <a href="#">隐私政策</a>
+                    <a href="/user-agreement">隐私政策</a>
                     <span class="sep">|</span>
-                    <a href="#">用户协议</a>
+                    <a href="/user-agreement">用户协议</a>
                 </div>
             </div>
         </div>

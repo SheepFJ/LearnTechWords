@@ -22,6 +22,7 @@ axios.interceptors.request.use(
 // 响应拦截器：处理 token 过期
 axios.interceptors.response.use(
     response => response,
+
     error => {
         if (error.response && error.response.status === 401) {
             // 说明 token 无效或过期

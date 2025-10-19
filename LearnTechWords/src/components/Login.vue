@@ -3,7 +3,7 @@
     <div class="login-card">
       <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px;">
         <img src="@/assets/img/logo.svg" alt="LearnTechWords" class="logo" style="height: 38px;">
-        <h1 style="margin: 0; font-size: 1.4rem;">LearnTechWords</h1>
+        <h1 style="margin: 0; font-size: 1.4rem;">LearnTechWords</h1> 
       </div>
       <!-- 头部切换按钮 -->
       <div class="tab-header">
@@ -48,6 +48,20 @@
             @blur="validatePassword(loginForm.password)"
           />
           <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
+        </div>
+
+        <div class="footer-text" style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+          <input
+            type="checkbox"
+            id="agreement"
+            v-model="agreed"
+          />
+          <label for="agreement" style="font-size: 0.72em;">
+            我已阅读并同意
+            <a href="/user-agreement" target="_blank" style="color: #6b47dc;">《用户协议》</a>
+            
+            <!-- <a href="/privacy-policy" target="_blank" style="color: #6b47dc;">《隐私政策》</a> -->
+          </label>
         </div>
 
         <button type="submit" :disabled="isLoading" class="submit-btn">
@@ -108,7 +122,9 @@
         {{ errorMessage }}
       </div>
     </div>
+ 
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -122,6 +138,7 @@ import { myhost } from '@/types/myhost'
 const isLogin = ref(true)
 const isLoading = ref(false)
 const errorMessage = ref('')
+const agreed = ref(false)
 
 // 表单数据
 const loginForm = reactive<LoginForm>({
@@ -254,6 +271,11 @@ const handleLogin = async () => {
 
   isLoading.value = true
   errorMessage.value = ''
+  if (!agreed.value) {
+    errorMessage.value = '请先阅读并同意用户协议和隐私政策'
+    isLoading.value = false
+    return
+  }
 
   try {
     // await new Promise(resolve => setTimeout(resolve, 1000))

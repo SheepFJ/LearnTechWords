@@ -1,9 +1,13 @@
 <template>
+  <!-- 导航栏 -->
+  <HeardBtn />
   <div class="introduce-container">
+
+    <!--  -->
     <div class="header">
-      <img src="@/assets/img/logo.svg" alt="云上考证" class="logo" />
-      <h1>云上考证项目介绍</h1>
-      <p class="subtitle">Vue3 + TypeScript + Flask + MySQL 全栈技能认证平台</p>
+      <img src="@/assets/img/logo.svg" alt="LearnTechWords" class="logo" />
+      <h1>LearnTechWords项目介绍</h1>
+      <p class="subtitle">Vue3 + TypeScript + Flask + MySQL 计算机常用词汇平台</p>
     </div>
     <div class="content">
       <section class="section">
@@ -11,7 +15,7 @@
         <ul>
           <li><b>Vue3</b>：采用 Composition API，提升组件复用性与开发效率</li>
           <li><b>TypeScript</b>：为项目提供类型安全，减少运行时错误</li>
-          <li><b>HTML5 & CSS3</b>：响应式布局，兼容多端设备</li>
+          <li><b>HTML5 & CSS3</b>：响应式布局，兼容多端设备,ios端可分享添加到桌面</li>
           <li><b>JavaScript</b>：灵活实现页面交互与数据处理</li>
         </ul>
       </section>
@@ -24,30 +28,25 @@
         </ul>
       </section>
       <section class="section">
-        <h2><i class="iconfont icon-rocket"></i> 项目亮点</h2>
+        <h2><i class="iconfont icon-rocket"></i> 项目功能</h2>
         <ul>
-          <li>支持用户注册、登录与权限管理，安全性高</li>
-          <li>多种技能证书信息一站式查询与管理</li>
+          <li>支持用户注册、登录与权限管理，安全存储学习数据不丢失</li>
+          <li>多种计算机常用词汇信息一站式查询与管理</li>
           <li>前后端分离，接口规范清晰，易于维护与扩展</li>
-          <li>界面美观，交互友好，适配 PC 与移动端</li>
+          <li>界面美观，交互友好，适配 PC 与移动端,ios端可分享添加到桌面</li>
         </ul>
       </section>
-      <section class="section">
-        <h2><i class="iconfont icon-link"></i> 开源与学习</h2>
-        <p>
-          本项目适合学习全栈开发、Vue3 组件化、TypeScript 类型系统、Flask API 设计与数据库建模等内容。<br>
-          欢迎 Star、Fork 与交流！
-        </p>
-      </section>
+     
     </div>
     <div class="footer">
-      <span>© 2024 云上考证 | 技能认证平台</span>
+      <span>© 2024 LearnTechWords | 计算机常用词汇平台</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 // 可根据需要引入图标库或其他依赖
+import HeardBtn from '@/components/HeardBtn.vue'
 </script>
 
 <style scoped>
@@ -55,7 +54,7 @@
   max-width: 800px;
   margin: 60px auto 40px auto;
   background: #fff;
-  border-radius: 18px;
+  /* border-radius: 18px; */
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   padding: 36px 32px 24px 32px;
   font-family: 'Segoe UI', 'PingFang SC', 'Hiragino Sans', Arial, sans-serif;

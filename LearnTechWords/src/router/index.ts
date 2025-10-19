@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Home from '../components/Home.vue'
 import Login from '../components/Login.vue'
-import Introduce from '../components/About/Introduce.vue'
+import Introduce from '../components/About/IntroduceAbout.vue'
+import StudyHome from '../components/Study/StudyHome.vue'
+import toStudy from '../components/Study/toStudy.vue'
+import userAgreement from '../components/UserAgreement/UserAgreement.vue'
+// import privacyPolicy from '../components/UserAgreement/PrivacyPolicy.vue'
 // 定义路由表
 const routes: RouteRecordRaw[] = [
     {
@@ -22,7 +26,27 @@ const routes: RouteRecordRaw[] = [
         path: '/introduce',
         name: 'Introduce',
         component: Introduce
+    },
+    {
+        path: '/study',
+        name: 'StudyHome',
+        component: StudyHome
+    },
+    {
+        path: '/toStudy',
+        name: 'toStudy',
+        component: toStudy
+    },
+    {
+        path: '/user-agreement',
+        name: 'userAgreement',
+        component: userAgreement
     }
+    // {
+    //     path: '/privacy-policy',
+    //     name: 'privacyPolicy',
+    //     component: privacyPolicy
+    // }
 ]
 
 const router = createRouter({

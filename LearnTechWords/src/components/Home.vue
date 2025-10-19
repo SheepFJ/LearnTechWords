@@ -9,12 +9,12 @@
 import HeardBtn from '@/components/HeardBtn.vue'
 
 import HomeHeard from '@/components/Home/HomeHeard.vue'
-import ResearchDisplay from '@/components/Home/ResearchDisplay.vue'
+// import ResearchDisplay from '@/components/Home/ResearchDisplay.vue'
 
-import Footer from '@/components/Footer.vue'
+import Footer from '@/components/FooterBody.vue'
 
-import { onMounted } from 'vue'
-import { request } from '@/axios.ts'
+// import { onMounted } from 'vue'
+// import { request } from '@/axios.ts'
 
 // 向 /index 发送请求，验证 token 是否过期
 // onMounted(async () => {

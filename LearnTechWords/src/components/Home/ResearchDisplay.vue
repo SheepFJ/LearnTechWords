@@ -1,516 +1,321 @@
 <template>
     <div class="research-display">
-         <div class="home-heard">
-
-        <div class="home-heard-body">
-            <div class="home-heard-body-title">
-                <h1>让在线<span>学习、</span><span>考证</span>更简单</h1>
-            </div>
-        </div>    
-        </div>
-        <div class="container">
-            <div class="header">
-                <h1>考证分类</h1>
-                <p>选择您需要的考证类型，开启学习之旅</p>
-            </div>
-            
-            <div v-if="loading" class="loading">
-                <div class="spinner"></div>
-                <p>加载中...</p>
-            </div>
-            
-            <div v-else class="certificate-grid">
-                <div 
-                    v-for="cert in certificates" 
-                    :key="cert._id"
-                    class="certificate-card"
-                    @click="navigateToPractise(cert._id)"
-                >
-                    <div class="card-icon">
-                        <span class="icon">{{ getIcon(cert.typename) }}</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">{{ cert.typename }}</h3>
-                        <p class="card-desc">{{ cert.introduce }}</p>
-                        <div class="card-meta">
-                            <span class="card-level">{{ cert.level }}</span>
-                            <span class="card-count">{{ cert.quality }}+ 题目</span>
+        <!-- 滚动展示头部 -->
+        <div class="scroll-header">
+            <div class="scroll-container">
+                <div class="scroll-item" v-for="(item, index) in scrollItems" :key="index" :class="{ active: currentIndex === index }">
+                    <div class="content-wrapper">
+                        <div class="text-section">
+                            <h2>{{ item.title }}</h2>
+                            <p>{{ item.description }}</p>
                         </div>
-                        <div class="exam-info">
-                            <span class="exam-questions">{{ cert.exam }}</span>
+                        <div class="image-section">
+                            <img :src="item.image" :alt="item.title" />
                         </div>
-                    </div>
-                    <div class="card-arrow">
-                        <span>→</span>
                     </div>
                 </div>
             </div>
+            
+            <!-- 指示器 -->
+            <div class="indicators">
+                <span 
+                    v-for="(item, index) in scrollItems" 
+                    :key="index"
+                    :class="{ active: currentIndex === index }"
+                    @click="goToSlide(index)"
+                ></span>
+            </div>
         </div>
+
+        <!-- 立即开始学习 -->
+        <div class="start-learning">
+            <button @click="router.push('/study')">立即开始学习>></button>
+        </div>
+
+        
     </div>
+    <ChaoXingTranslate />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { request } from '@/axios.ts'
-
-interface Certificate {
-    _id: string
-    typename: string
-    introduce: string
-    level: string
-    quality: string
-    exam: string
-    fullmarks: string
-    passscore: string
-    created_at: string
-    id: number
-}
+import ChaoXingTranslate from '@/components/Home/ChaoXingTranslate.vue'
 
 const router = useRouter()
-const certificates = ref<Certificate[]>([])
-const loading = ref(true)
+const currentIndex = ref(0)
 
-// 根据考证类型获取对应图标
-const getIcon = (typename: string): string => {
-    const iconMap: { [key: string]: string } = {
-        '特种作业操作证（国家题库）': '⚡',
-        '特种设备作业人员': '🔧',
-        '安全生产管理人员': '🛡️',
-        '主要负责人': '👔',
-        '特种作业操作证（地区题库）': '',
-        '建筑行业': '🏗️',
-        '职业资格': '🎓',
-        '特种作业操作证（四川复审）': '🔄',
-        '煤矿类从业人员': '⛏️',
-        '特种作业操作证（四川）': '🌶️',
-        '注册类执业资格证': '📋',
-        '道路运输（交通运输部）': '🚛',
-        '燃气经营企业从业人员': '🔥',
-        '油气田行业': '🛢️',
-        '北京': '🏛️',
-        '学历教育': '📚'
+// 滚动展示数据 - 可扩展的结构
+const scrollItems = ref([
+    {
+        title: '例句辅助记忆',
+        description: '例句辅助记忆，马上开启学习之旅！',
+        image: '/src/assets/home/liju.png'
+    },
+    {
+        title: 'AI拆分单词',
+        description: 'AI拆分单词，记忆更高效！',
+        image: '/src/assets/home/aibot.png'
     }
-    return iconMap[typename] || '📄'
+    
+    // 可以在这里添加更多展示项
+])
+
+let autoScrollTimer = null
+
+// 自动滚动
+const startAutoScroll = () => {
+    autoScrollTimer = setInterval(() => {
+        currentIndex.value = (currentIndex.value + 1) % scrollItems.value.length
+    }, 10000) // 每10秒切换一次
 }
 
-// 获取考证数据
-const fetchCertificates = async () => {
-    try {
-        loading.value = true
-        const response = await request({
-            url: '/certificate',
-            method: 'get'
-        })
-        
-        if (response && response.data) {
-            console.log(response.data)
-            certificates.value = response.data
-        }
-    } catch (error) {
-        console.error('获取考证数据失败:', error)
-        certificates.value = []
-    } finally {
-        loading.value = false
+// 停止自动滚动
+const stopAutoScroll = () => {
+    if (autoScrollTimer) {
+        clearInterval(autoScrollTimer)
+        autoScrollTimer = null
     }
 }
 
-// 导航到练习页面
-const navigateToPractise = (_id: string) => {
-    router.push({
-        path: '/practise',
-        query: { _id }
-    })
+// 跳转到指定幻灯片
+const goToSlide = (index) => {
+    currentIndex.value = index
+    stopAutoScroll()
+    startAutoScroll()
 }
 
-// 组件挂载时获取数据
+// 组件挂载时开始自动滚动
 onMounted(() => {
-    fetchCertificates()
+    startAutoScroll()
+})
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+    stopAutoScroll()
 })
 </script>
 
 <style scoped>
-
-.home-heard {
-        width: 100vw;
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
-        box-sizing: border-box;
-    }
-    .home-heard-body {
-        padding-top: 50px;
-    }
-
-    .home-heard-body-title h1{
-        margin: 0 auto;
-        font-size: 28px;
-        font-weight: 600;
-        color: #333;
-        text-align: center;
-        line-height: 1.5;
-        letter-spacing: 2px;
-    }
-
-    .home-heard-body-title span {
-        color: #007bff;
-    }
-
-
 .research-display {
-
     min-height: 100vh;
-    padding: 40px 0;
+    padding: 0;
+    border-bottom: 2px dashed #b1b1b1;
 }
 
-.container {
+/* 滚动展示头部 */
+.scroll-header {
+    position: relative;
+    height: 80vh;
+    overflow: hidden;
+    /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
+}
+
+.scroll-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.scroll-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-item.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+    width: 100%;
+    padding: 0 40px;
+    gap: 60px;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 50px;
+.text-section {
+    flex: 1;
+    text-align: left;
 }
 
-.header h1 {
-    font-size: 36px;
+.text-section h2 {
+    font-size: 48px;
     font-weight: 700;
     color: #2c3e50;
-    margin-bottom: 16px;
+    margin: 0 0 20px 0;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.header p {
-    font-size: 18px;
+.text-section p {
+    font-size: 24px;
     color: #7f8c8d;
     margin: 0;
+    line-height: 1.6;
+    font-weight: 500;
 }
 
-.loading {
+.image-section {
+    flex: 1;
+    /* margin-left: -300px; */
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    padding: 60px 0;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 16px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading p {
-    color: #7f8c8d;
-    font-size: 16px;
-}
-
-.certificate-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-top: 40px;
-}
-
-.certificate-card {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    display: flex;
     align-items: center;
-    gap: 12px;
-    border: 2px solid transparent;
-    position: relative;
-    overflow: hidden;
 }
 
-.certificate-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    transform: scaleX(0);
+.image-section img {
+    max-width: 105%;
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
 
-.certificate-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border-color: #667eea;
+.image-section img:hover {
+    transform: scale(1.05);
 }
 
-.certificate-card:hover::before {
-    transform: scaleX(1);
-}
-
-.card-icon {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
+/* 指示器 */
+.indicators {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    gap: 12px;
+    z-index: 10;
 }
 
-.icon {
-    font-size: 18px;
-    filter: grayscale(1) brightness(0) invert(1);
-}
-
-.card-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.card-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0 0 4px 0;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.card-desc {
-    font-size: 11px;
-    color: #7f8c8d;
-    margin: 0 0 8px 0;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.card-meta {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
-}
-
-.card-level {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: 500;
-}
-
-.card-count {
-    background: #ecf0f1;
-    color: #7f8c8d;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: 500;
-}
-
-.exam-info {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.exam-questions {
-    background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-    color: white;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.card-arrow {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    background: #f8f9fa;
+.indicators span {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #7f8c8d;
-    font-size: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.certificate-card:hover .card-arrow {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    transform: translateX(2px);
+.indicators span.active {
+    background: #667eea;
+    transform: scale(1.2);
 }
 
-/* 响应式设计 - 确保所有屏幕都保持两列布局 */
+.indicators span:hover {
+    background: rgba(102, 126, 234, 0.7);
+}
+
+/* 立即开始学习按钮 */
+.start-learning {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.start-learning button {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 28px;
+    padding: 14px 40px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(118, 75, 162, 0.3);
+    transition: all 0.3s ease;
+    letter-spacing: 1.2px;
+    outline: none;
+}
+
+.start-learning button:hover {
+    background: linear-gradient(100deg, #5a67d8 0%, #7f53ac 100%);
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+}
+
+/* 移动端适配 */
 @media (max-width: 768px) {
-    .container {
-        padding: 0 12px;
+    .content-wrapper {
+        flex-direction: column;
+        padding: 0 20px;
+        gap: 40px;
+        text-align: center;
     }
     
-    .header h1 {
-        font-size: 24px;
+    .text-section {
+        text-align: center;
+        /* margin-left: 0px; */
     }
     
-    .header p {
-        font-size: 14px;
+    .text-section h2 {
+        font-size: 32px;
     }
     
-    .certificate-grid {
-        gap: 12px;
+    .text-section p {
+        font-size: 18px;
     }
     
-    .certificate-card {
-        padding: 12px;
-        gap: 8px;
+    .image-section img {
+        max-height: 300px;
+        
     }
     
-    .card-icon {
-        width: 32px;
-        height: 32px;
+    .start-learning {
+        bottom: 80px;
     }
     
-    .icon {
-        font-size: 14px;
-    }
-    
-    .card-title {
-        font-size: 12px;
-    }
-    
-    .card-desc {
-        font-size: 10px;
-    }
-    
-    .card-level,
-    .card-count,
-    .exam-questions {
-        font-size: 9px;
-        padding: 1px 4px;
-    }
-    
-    .card-arrow {
-        width: 20px;
-        height: 20px;
-        font-size: 10px;
+    .start-learning button {
+        font-size: 16px;
+        padding: 12px 30px;
     }
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 0 8px;
+    .content-wrapper {
+        padding: 0 15px;
+        gap: 30px;
     }
     
-    .certificate-grid {
-        gap: 8px;
+    .text-section h2 {
+        font-size: 24px;
     }
     
-    .certificate-card {
-        padding: 10px;
-        gap: 6px;
+    .text-section p {
+        font-size: 16px;
     }
     
-    .card-icon {
-        width: 28px;
-        height: 28px;
+    .image-section img {
+        max-height: 250px;
     }
     
-    .icon {
-        font-size: 12px;
+    .indicators {
+        bottom: 30px;
     }
     
-    .card-title {
-        font-size: 11px;
+    .start-learning {
+        bottom: 60px;
     }
     
-    .card-desc {
-        font-size: 9px;
-    }
-    
-    .card-meta {
-        gap: 4px;
-        margin-bottom: 4px;
-    }
-    
-    .exam-info {
-        gap: 4px;
-    }
-    
-    .card-level,
-    .card-count,
-    .exam-questions {
-        font-size: 8px;
-        padding: 1px 3px;
-    }
-    
-    .card-arrow {
-        width: 18px;
-        height: 18px;
-        font-size: 9px;
-    }
-}
-
-/* 超小屏幕优化 */
-@media (max-width: 360px) {
-    .certificate-card {
-        padding: 8px;
-        gap: 4px;
-    }
-    
-    .card-icon {
-        width: 24px;
-        height: 24px;
-    }
-    
-    .icon {
-        font-size: 10px;
-    }
-    
-    .card-title {
-        font-size: 10px;
-    }
-    
-    .card-desc {
-        font-size: 8px;
-    }
-    
-    .card-level,
-    .card-count,
-    .exam-questions {
-        font-size: 7px;
-        padding: 1px 2px;
-    }
-    
-    .card-arrow {
-        width: 16px;
-        height: 16px;
-        font-size: 8px;
+    .start-learning button {
+        font-size: 14px;
+        padding: 10px 25px;
     }
 }
 </style>
