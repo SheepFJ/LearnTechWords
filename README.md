@@ -1,11 +1,12 @@
 # 💻 LearnTechWords (计算机英语词汇学习)
+# [LearnTechWords在线使用地址](http://api.sheep.cloud.brainiac.top:8007/login)
 
 > 一个收录了 **1000+ 计算机必备英语单词** 的在线学习项目  
 > 帮助你轻松掌握开发、计算机科学和 IT 领域常见词汇  
 
 ---
 
-## [LearnTechWords在线使用地址](http://api.sheep.cloud.brainiac.top:8007/login)
+
 
 ## ✨ 项目简介
 
